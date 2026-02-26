@@ -96,6 +96,7 @@ namespace RadiationRoverControlApp
             }
         }
 
+        //Connecting to the Camera Feed
         private async void LoadCameraFeed()
         {
             await CameraView.EnsureCoreWebView2Async();
