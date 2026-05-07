@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+            <html>
+            <head>
+                <link rel='stylesheet' href='http://rover.local/leaflet.css'/>
+                <script src='http://rover.local/leaflet.js'></script>
+                <style>
+                    html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; background: #222; }
+                </style>
+            </head>
+            <body>
+                <div id='map'></div>
+                <script>
+                    var map, marker, roverPath;
+                    var hasCentered = false;
+                    
+                    //Initializing map
+                    function initMap() {
+
+                        //Setting position to Brownsville, TX. Zoom at lvl 15.
+                        map = L.map('map').setView([25.9017, -97.4975], 15);
+
+                        //Setting up Tile Files path. Indicating to the Software, that the Tiles will be in the local folder, not online.
+                        L.tileLayer('http://rover.local/tiles/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+                        
+                        //Initializing the marker
+                        marker = L.marker([0,0]).addTo(map);
+
+                        //Initializing the Path with a lime color
+                        roverPath = L.polyline([], {color:'lime', weight:3}).addTo(map);
+                    }
+
+                    function updateRover(lat, lon,usv) {
+
+                        //Creating a Variable to hold the usv value
+                        var usvNum = parseFloat(usv) || 0;
+
+                        if(lat === 0) return;
+
+                        //Create a variable holding the new Position to update
+                        var newPos = L.latLng(lat, lon);
+
+                        //Set the Marker to the new updated Position
+                        marker.setLatLng(newPos);
+
+                        //Add the new position to the rover path, thus creating a line
+                        roverPath.addLatLng(newPos);
+
+                        //Zooming in on the Robot position when starting.
+                        if (!hasCentered) {
+                         map.setView(newPos, 18);
+                          hasCentered = true; 
+                        }
+                        
+                        //Draw a Circle if radiation is high
+                        if (usvNum > 0.20) {
+                            var circleColor = 'yellow';
+                            var circleRadius = 5; // meters
+
+                            if (usvNum > 0.30) { 
+                                circleColor = 'orange'; 
+                                circleRadius = 10; 
+                            }
+                            if (usvNum > 0.50) { 
+                                circleColor = 'red'; 
+                                circleRadius = 15; 
+                            }
+
+                            //Create the Circle on the map
+                            L.circle(newPos, {
+                                color: circleColor,
+                                fillColor: circleColor,
+                                fillOpacity: 0.4,
+                                radius: circleRadius,
+                                weight: 1,
+                                interactive: false
+                            }).addTo(map).bringToBack(); // Put circles behind the marker/line
+                        }
+
+                        //Keep a thin, consistent path line
+                        var points = roverPath.getLatLngs();
+
+                        if(points.length > 0){
+                            var lastPos = points[points.length - 1];
+                            L.polyline([lastPos, newPos], {
+                            color: '#00FF00', // Constant Lime Green
+                            weight: 2,     
+                            opacity: 0.7
+                        }).addTo(map);
+                        }
+
+                        //Update marker
+                        marker.setLatLng(newPos);
+                        roverPath.addLatLng(newPos);
+                    }
+                    initMap();
+                </script>
+            </body>
+            </html>

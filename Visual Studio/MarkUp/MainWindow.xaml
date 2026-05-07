@@ -5,41 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RadiationRoverControlApp"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-       
         mc:Ignorable="d"
         Title="Radiation Rover"
-        Height="450"
-        Width="800"
+        Height="600" Width="1000"
         KeyDown="Window_KeyDown"
         KeyUp="Window_KeyUp"
         Focusable="True"
         Loaded="Window_Loaded">
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>    
-        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin = "10">
-                    <TextBlock Text=" Connection:" FontSize="16"/>
-            <TextBlock x:Name="ConnectionStatus"
-                               Text=" Offline"
-                               Foreground="Red"
-                               FontSize="16"
-                               FontWeight="Bold"/>
-            </StackPanel>
-            <Border Grid.Row="1"
-                    Margin="10"
-                    Background="Black"
-                    CornerRadius="10">
-            <wv2:WebView2 x:Name="CameraView"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch" />
-        </Border>
-        
-        
+	<Grid Background="#1E1E1E">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<!-- Connection Status -->
+		<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+			<TextBlock Text=" Connection:" FontSize="16" Foreground ="White"/>
+			<TextBlock x:Name="ConnectionStatus" Text=" Offline" Foreground="Red" FontSize="16" FontWeight="Bold"/>
+		</StackPanel>
+		<!--Main Content-->
+		<Grid Grid.Row="1" Margin="10">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="2*"/>
+				<ColumnDefinition Width="1*"/>
+			</Grid.ColumnDefinitions>
+			<!--Camera View-->
+			<Border Grid.Column="0" Margin="10" Background="Black" CornerRadius="10">
+				<wv2:WebView2 x:Name="CameraView" />
+			</Border>
 
+			<Grid Grid.Column="1" Margin="5">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<!-- Telemetry Panel-->
+				<StackPanel Grid.Row="0">
+					<StackPanel Background="#1E1E1E" Margin="0,0,0,5">
+						<TextBlock Text="Rover Telemetry" FontSize="16" Foreground="White" Margin="5"/>
+						<GroupBox Header="Position" FontSize="16" Foreground="White">
+							<StackPanel>
+								<TextBlock Text="{Binding Latitude, StringFormat='Lat: {0:F6}'}" Foreground="LightGreen"/>
+								<TextBlock Text="{Binding Longitude, StringFormat='Lon: {0:F6}'}" Foreground="LightGreen"/>
+							</StackPanel>
+						</GroupBox>
 
-    </Grid>
+					</StackPanel>
+					<!--Radiation Panel-->
+					<GroupBox Header="Radiation Information" Foreground="White" FontSize ="16" BorderBrush="Green" Margin="0,5">
+						<StackPanel HorizontalAlignment="Center" Margin="5">
+							<TextBlock Text="{Binding SafetyStatus}" FontSize="24" FontWeight="Bold" Foreground="{Binding SafetyColor}" Margin="0,0,0,10"/>
+							<TextBlock Text="{Binding CPM, StringFormat={}{0} CPM}" FontSize="24" FontWeight="Bold" Foreground="LightGreen"/>
+							<TextBlock Text="{Binding uSv, StringFormat={}{0:F4} µSv/h}" FontSize="16" Foreground="LightGreen"></TextBlock>
+						</StackPanel>
+					</GroupBox>
+				</StackPanel>
+				<!-- Map View -->
+				<Border Grid.Row="1" CornerRadius="10" Background="Black" Margin="0,5,0,0">
+					<wv2:WebView2 x:Name="MapView" />
+				</Border>
+			</Grid>
+		</Grid>
+	</Grid>
 </Window>
